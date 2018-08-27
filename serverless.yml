@@ -21,6 +21,21 @@ plugins:
   - serverless-dynamodb-local
   - serverless-offline
 
+custom:
+  dynamoDemoTableName: "${opt:stage, self:provider.stage}-demo"
+  dynamodb:
+    start:
+      port: 8200
+      inMemory: true
+      migrate: true
+    migration:
+      dir: offline/migrations
+  enabled:
+    dev: false
+    production: true
+  webpack:
+    includeModules: true
+
 provider:
   name: aws
   runtime: nodejs8.10
@@ -28,6 +43,22 @@ provider:
   region: ap-northeast-2
   memorySize: 512
   timeout: 20
+  environment:
+    DYNAMODB_DEMO_TABLE: ${self:custom.dynamoDemoTableName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.dynamoDemoTableName}"
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: "*"
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -63,10 +94,19 @@ functions:
   req_scooter:
     handler: scooter/req_scooter/handler.reqScooter
     events:
-      - https:
-        path: /scooter
-        method: post
-        cors: true
+      - http:
+          path: /
+          method: get
+          cors: true
+
+  demo_reqUse:
+    handler: demo/handler.demo.reqUse.reqUse
+    events:
+      - http:
+          path: /use/{userid}/{scooterid}
+          method: get
+          cors: true
+
 
 
 #    The following are a few example events you can configure
@@ -113,3 +153,21 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+
+resources:
+  Resources:
+    DemoTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.dynamoDemoTableName}
+
