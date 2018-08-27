@@ -1,7 +1,7 @@
 'use strict';
 
-const reqScooter = require('request.scooter.js');
-module.exports.reqScooter = async (event, context, callback) => {
+const reqScooter = require('./request.scooter.js');
+module.exports.reqScooter = (event, context, callback) => {
     let meta = {};
     let req = new reqScooter();
     console.log(`reqScooter : ${meta}`);
