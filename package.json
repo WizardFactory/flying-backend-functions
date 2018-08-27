@@ -3,7 +3,9 @@
   "description": "",
   "version": "0.1.0",
   "dependencies": {
-    "async": "^2.6.1"
+    "async": "^2.6.1",
+    "aws-sdk": "^2.302.0",
+    "mocha": "^5.2.0"
   },
   "devDependencies": {
     "serverless-dynamodb-local": "^0.2.33",

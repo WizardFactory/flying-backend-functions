@@ -3,5 +3,13 @@
  */
 'use strict';
 
-module.export = {
+module.exports = {
+    dynamoDb: {
+        demo: {
+            tableName: (process.env.DYNAMODB_DEMO_TABLE || '')
+        },
+        scooter:{
+            tableName: (process.env.DYNAMO_SCOOTER_TABLENAME || '')
+        }
+    }
 };

@@ -92,7 +92,7 @@ package:
 
 functions:
   req_scooter:
-    handler: scooter/req_scooter/handler.reqScooter
+    handler: scooter/reqScooter/handler.reqScooter
     events:
       - http:
           path: /
@@ -100,7 +100,7 @@ functions:
           cors: true
 
   demo_reqUse:
-    handler: demo/handler.demo.reqUse.reqUse
+    handler: demo/handler.reqUse
     events:
       - http:
           path: /use/{userid}/{scooterid}
