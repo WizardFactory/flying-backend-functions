@@ -4,4 +4,12 @@
 'use strict';
 
 module.export = {
+    dynamoDb: {
+        demo: {
+            tableName: (process.env.DYNAMO_DEMO_TABLENAME || '')
+        },
+        scooter:{
+            tableName: (process.env.DYNAMO_SCOOTER_TABLENAME || '')
+        }
+    }
 };
