@@ -68,7 +68,7 @@ describe('test demo module', ()=>{
         });
     });
 */
-    xit('test request use', (done)=>{
+    it('test request start', (done)=>{
         let event = {
             dbOptions:{
                 port: getDbPort()
@@ -96,7 +96,7 @@ describe('test demo module', ()=>{
        })
     });
 
-    it('test request getItem', (done)=>{
+    it('test request end', (done)=>{
         let event = {
             dbOptions:{
                 port: getDbPort()
@@ -112,13 +112,42 @@ describe('test demo module', ()=>{
             }
         };
 
-        handlerDemo.reqGet(event, context, (err, result)=>{
+        handlerDemo.reqEnd(event, context, (err, result)=>{
             if(err){
                 console.error('Error!');
                 assert().fail();
                 return done();
             }
 
+            console.info(JSON.stringify(result));
+            done();
+        })
+    });
+
+    it('test request query', (done)=>{
+        let event = {
+            dbOptions:{
+                port: getDbPort()
+            },
+            pathParameters:{
+                userid : 10001,
+            },
+            queryStringParameters:{
+                scooterid : 20001,
+                lon: 12.34,
+                lat: 56.78,
+                addr: 'TEST'
+            }
+        };
+
+        handlerDemo.reqQuery(event, context, (err, result)=>{
+            if(err){
+                console.error('Error!');
+                assert().fail();
+                return done();
+            }
+
+            console.info('ITEM count : ', result.Items.length);
             console.info(JSON.stringify(result));
             done();
         })

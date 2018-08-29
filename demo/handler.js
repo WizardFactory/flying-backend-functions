@@ -52,19 +52,32 @@ var makePutParams = (v, fnStatus) => {
         }
     }
 };
-var makeGetParams = (v, fnStatus) => {
+
+var makeQueryParams = (v, fnStatus) => {
     return {
         TableName: getTableName(),
-        Key: {
-            userid: getUserId(v),
-            timestamp: 0
-        }
+        KeyConditionExpression: '#userid = :userid',
+        ExpressionAttributeNames: {
+            '#userid': 'userid'
+        },
+        ExpressionAttributeValues:{
+            ':userid': getUserId(v)
+        },
+        ScanIndexForward: true
     }
 };
-module.exports.reqGet = (event, context, callback) => {
-    console.info(`\n reqGet event : ${JSON.stringify(event)}`);
+
+/**
+ *
+ * @param event
+ * @param context
+ * @param callback
+ * @returns {*}
+ */
+module.exports.reqQuery = (event, context, callback) => {
+    console.info(`\n reqQuery event : ${JSON.stringify(event)}`);
     try{
-        var params = makeGetParams(event, getStartStatus);
+        var params = makeQueryParams(event, getStartStatus);
     }catch(err){
         err.message += 'Unexpected error';
         console.error(`exception : ${err}`);
@@ -72,15 +85,22 @@ module.exports.reqGet = (event, context, callback) => {
     }
 
     let db = new dynamoDb(getDbOptions(event));
-    console.info(`reqGet DB getItem params: ${JSON.stringify(params)}`);
-    db.setParams(params).getItemDB((err, res)=>{
-        console.log(`update : Err[${err}], Res[${res}]`);
+    console.info(`reqQuery DB getItem params: ${JSON.stringify(params)}`);
+    db.setParams(params).queryDB((err, res)=>{
+        console.log(`query : Err[${err}], Res[${res}]`);
 
-        console.log(`item : ${JSON.stringify(res)}`);
-        return callback(err);
+        console.log(`items : ${JSON.stringify(res)}`);
+        return callback(err, res);
     });
 };
 
+/**
+ * Description : To insert start item which is happened by pressing start button by user on the application
+ * @param event
+ * @param context
+ * @param callback
+ * @returns {*}
+ */
 module.exports.reqStart = (event, context, callback) => {
     console.info(`\n reqStart event : ${JSON.stringify(event)}`);
     try{
@@ -95,11 +115,18 @@ module.exports.reqStart = (event, context, callback) => {
 
     console.info(`reqStart DB put params: ${JSON.stringify(params)}`);
     db.setParams(params).putDB((err, res)=>{
-        console.log(`update : Err[${err}], Res[${res}]`);
+        console.log(`reqStart put : Err[${err}], Res[${res}]`);
         return callback(err);
     });
 };
 
+/**
+ * Description : To insert end item which is happened by pressing end button by user on the application
+ * @param event
+ * @param context
+ * @param callback
+ * @returns {*}
+ */
 module.exports.reqEnd = (event, context, callback) => {
     console.info(`\n reqEnd event : ${JSON.stringify(event)}`);
     try{
@@ -114,7 +141,7 @@ module.exports.reqEnd = (event, context, callback) => {
 
     console.info(`reqEnd DB put params: ${JSON.stringify(params)}`);
     db.setParams(params).putDB((err, res)=>{
-        console.log(`update : Err[${err}], Res[${res}]`);
+        console.log(`reqEnd put : Err[${err}], Res[${res}]`);
         return callback(err);
     });
 };

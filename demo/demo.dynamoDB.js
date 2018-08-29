@@ -37,6 +37,12 @@ class dynamoDb{
             return callback(err, result);
         });
     }
+
+    queryDB(callback){
+        this.dynamoDb.query(this.getParams(), (err, result)=>{
+            return callback(err, result);
+        });
+    }
 }
 
 
