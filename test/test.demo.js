@@ -1,18 +1,90 @@
 'use strict';
 
 const handlerDemo = require('../demo/handler');
+const config = require('../config');
+const AWS = require('aws-sdk');
+
+var getDbPort = ()=>8000;
+var getTableName = ()=> config.dynamoDb.demo.tableName;
+var dbOptions = {
+    region: 'localhost',
+    endpoint: 'http://localhost:'+ getDbPort(),
+};
+
+var getDbTableInfo = () => {
+    return {
+        TableName: getTableName(),
+        AttributeDefinitions:[
+            {
+                AttributeName: 'userid',
+                AttributeType: 'N'
+            },
+            {
+                AttributeName: 'timestamp',
+                AttributeType: 'N'
+            }
+        ],
+        KeySchema:[
+            {
+                AttributeName: 'userid',
+                KeyType: 'HASH'
+            },
+            {
+                AttributeName: 'timestamp',
+                KeyType: 'RANGE'
+            }
+        ],
+        ProvisionedThroughput:{
+            ReadCapacityUnits: 5,
+            WriteCapacityUnits: 5
+        }
+    }
+};
 
 describe('test demo module', ()=>{
-
-    it('test request use', (done)=>{
+    /*
+    before('create table', (done)=>{
+        let dynamoDb = new AWS.DynamoDB(dbOptions);
+        dynamoDb.createTable(getDbTableInfo(), (err, res) =>{
+            if(err){
+                console.info(`Failed to create db table : ${err}`);
+                return done();
+            }
+            //console.info(`Created DB Table : ${getTableName()}`);
+            done();
+        });
+    });
+    */
+/*
+    after('delete table', (done)=>{
+        let dynamoDb = new AWS.DynamoDB(dbOptions);
+        dynamoDb.deleteTable({TableName:getTableName()}, (err, res) =>{
+            if(err){
+                console.info(`Failed to delete db table : ${err}`);
+                return done();
+            }
+            //console.info(`Deleted DB Table : ${res}`);
+            done();
+        });
+    });
+*/
+    xit('test request use', (done)=>{
         let event = {
+            dbOptions:{
+                port: getDbPort()
+            },
             pathParameters:{
                 userid : 10001,
-                scooterid : 20001
+            },
+            queryStringParameters:{
+                scooterid : 20001,
+                lon: 12.34,
+                lat: 56.78,
+                addr: 'TEST'
             }
         };
 
-        handlerDemo.reqUse(event, context, (err, result)=>{
+        handlerDemo.reqStart(event, context, (err, result)=>{
            if(err){
                console.error('Error!');
                assert().fail();
@@ -22,5 +94,33 @@ describe('test demo module', ()=>{
            console.info(JSON.stringify(result));
            done();
        })
+    });
+
+    it('test request getItem', (done)=>{
+        let event = {
+            dbOptions:{
+                port: getDbPort()
+            },
+            pathParameters:{
+                userid : 10001,
+            },
+            queryStringParameters:{
+                scooterid : 20001,
+                lon: 12.34,
+                lat: 56.78,
+                addr: 'TEST'
+            }
+        };
+
+        handlerDemo.reqGet(event, context, (err, result)=>{
+            if(err){
+                console.error('Error!');
+                assert().fail();
+                return done();
+            }
+
+            console.info(JSON.stringify(result));
+            done();
+        })
     });
 });
