@@ -6,7 +6,7 @@ const AWS = require('aws-sdk');
 
 var getDbPort = ()=>8000;
 var getTableName = ()=> config.dynamoDb.demo.tableName;
-var dbOptions = {
+var dbLocalOptions = {
     region: 'localhost',
     endpoint: 'http://localhost:'+ getDbPort(),
 };
@@ -42,9 +42,9 @@ var getDbTableInfo = () => {
 };
 
 describe('test demo module', ()=>{
-    /*
+
     before('create table', (done)=>{
-        let dynamoDb = new AWS.DynamoDB(dbOptions);
+        let dynamoDb = new AWS.DynamoDB(dbLocalOptions);
         dynamoDb.createTable(getDbTableInfo(), (err, res) =>{
             if(err){
                 console.info(`Failed to create db table : ${err}`);
@@ -54,10 +54,9 @@ describe('test demo module', ()=>{
             done();
         });
     });
-    */
-/*
+
     after('delete table', (done)=>{
-        let dynamoDb = new AWS.DynamoDB(dbOptions);
+        let dynamoDb = new AWS.DynamoDB(dbLocalOptions);
         dynamoDb.deleteTable({TableName:getTableName()}, (err, res) =>{
             if(err){
                 console.info(`Failed to delete db table : ${err}`);
@@ -67,7 +66,7 @@ describe('test demo module', ()=>{
             done();
         });
     });
-*/
+
     it('test request start', (done)=>{
         let event = {
             dbOptions:{
@@ -91,7 +90,7 @@ describe('test demo module', ()=>{
                return done();
            }
 
-           console.info(JSON.stringify(result));
+           console.info(JSON.stringify(result) + '\n');
            done();
        })
     });
@@ -119,7 +118,7 @@ describe('test demo module', ()=>{
                 return done();
             }
 
-            console.info(JSON.stringify(result));
+            console.info(JSON.stringify(result) + '\n');
             done();
         })
     });
@@ -147,8 +146,7 @@ describe('test demo module', ()=>{
                 return done();
             }
 
-            console.info('ITEM count : ', result.Items.length);
-            console.info(JSON.stringify(result));
+            console.info(JSON.stringify(result) + '\n');
             done();
         })
     });

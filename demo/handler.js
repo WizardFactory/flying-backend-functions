@@ -16,7 +16,6 @@ var getDbOptions = (v)=>{
 
     return undefined;
 };
-
 var getPathParameters = v => (v.pathParameters || {});
 var getQueryStringParameters = v => (v.queryStringParameters || {});
 var getUserId = v => parseInt(getPathParameters(v).userid || 0);
@@ -67,6 +66,41 @@ var makeQueryParams = (v, fnStatus) => {
     }
 };
 
+var makeResponse = (event, err, result) =>{
+    if(err){
+        console.error(`Error : msg type[${err}]`);
+        return {
+            statusCode: err.statusCode || 501,
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'cache-control': 'max-age=2592000',
+                'Access-Control-Allow-Origin':'*'
+            },
+            body: JSON.stringify({
+                status: 'ERROR',
+                userid: getUserId(event),
+                scooterid: getScooterId(event),
+                ErrorString : err.toString()
+            })
+        }
+    }else{
+        return {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'cache-control': 'max-age=2592000',
+                'Access-Control-Allow-Origin':'*'
+            },
+            body: JSON.stringify({
+                status: 'OK',
+                userid: getUserId(event),
+                scooterid: getScooterId(event),
+                result : result
+            })
+        }
+    }
+};
+
 /**
  *
  * @param event
@@ -75,7 +109,7 @@ var makeQueryParams = (v, fnStatus) => {
  * @returns {*}
  */
 module.exports.reqQuery = (event, context, callback) => {
-    console.info(`\n reqQuery event : ${JSON.stringify(event)}`);
+    //console.info(`\n reqQuery event : ${JSON.stringify(event)}`);
     try{
         var params = makeQueryParams(event, getStartStatus);
     }catch(err){
@@ -86,13 +120,13 @@ module.exports.reqQuery = (event, context, callback) => {
 
     // 1. make dynamo db instance
     let db = new dynamoDb(getDbOptions(event));
-    console.info(`reqQuery DB getItem params: ${JSON.stringify(params)}`);
+    //console.info(`reqQuery DB getItem params: ${JSON.stringify(params)}`);
 
     // 2. Query to get items from DB
     db.setParams(params).queryDB((err, res)=>{
-        console.log(`query : Err[${err}], Res[${res}]`);
-        console.log(`items : ${JSON.stringify(res)}`);
-        return callback(err, res);
+        //console.log(`query : Err[${err}], Res[${res}]`);
+        //console.log(`items : ${JSON.stringify(res)}`);
+        return callback(err, makeResponse(event, err, res));
     });
 };
 
@@ -104,7 +138,7 @@ module.exports.reqQuery = (event, context, callback) => {
  * @returns {*}
  */
 module.exports.reqStart = (event, context, callback) => {
-    console.info(`\n reqStart event : ${JSON.stringify(event)}`);
+    //console.info(`\n reqStart event : ${JSON.stringify(event)}`);
     try{
         var params = makePutParams(event, getStartStatus);
     }catch(err){
@@ -115,12 +149,12 @@ module.exports.reqStart = (event, context, callback) => {
 
     // 1. make dynamo db instance
     let db = new dynamoDb(getDbOptions(event));
-    console.info(`reqStart DB put params: ${JSON.stringify(params)}`);
+    //console.info(`reqStart DB put params: ${JSON.stringify(params)}`);
 
     // 2. Put item of start to DB
     db.setParams(params).putDB((err, res)=>{
-        console.log(`reqStart put : Err[${err}], Res[${res}]`);
-        return callback(err);
+        //console.log(`reqStart put : Err[${err}], Res[${res}]`);
+        return callback(err, makeResponse(event, err, res));
     });
 };
 
@@ -132,7 +166,7 @@ module.exports.reqStart = (event, context, callback) => {
  * @returns {*}
  */
 module.exports.reqEnd = (event, context, callback) => {
-    console.info(`\n reqEnd event : ${JSON.stringify(event)}`);
+    //console.info(`\n reqEnd event : ${JSON.stringify(event)}`);
     try{
         var params = makePutParams(event, getEndStatus);
     }catch(err){
@@ -143,11 +177,11 @@ module.exports.reqEnd = (event, context, callback) => {
 
     // 1. make dynamo db instance
     let db = new dynamoDb(getDbOptions(event));
-    console.info(`reqEnd DB put params: ${JSON.stringify(params)}`);
+    //console.info(`reqEnd DB put params: ${JSON.stringify(params)}`);
 
     // 2. Put item of end to DB
     db.setParams(params).putDB((err, res)=>{
-        console.log(`reqEnd put : Err[${err}], Res[${res}]`);
-        return callback(err);
+        //console.log(`reqEnd put : Err[${err}], Res[${res}]`);
+        return callback(err, makeResponse(event, err, res));
     });
 };
