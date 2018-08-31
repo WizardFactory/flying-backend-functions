@@ -20,8 +20,26 @@ class dynamoDb{
         return this.queryParams;
     }
 
-    updateDb(callback){
+    updateDB(callback){
         this.dynamoDb.update(this.getParams(), (err, result)=>{
+            return callback(err, result);
+        });
+    }
+
+    putDB(callback){
+        this.dynamoDb.put(this.getParams(), (err, result)=>{
+            return callback(err, result);
+        });
+    }
+
+    getItemDB(callback){
+        this.dynamoDb.get(this.getParams(), (err, result)=>{
+            return callback(err, result);
+        });
+    }
+
+    queryDB(callback){
+        this.dynamoDb.query(this.getParams(), (err, result)=>{
             return callback(err, result);
         });
     }

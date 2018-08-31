@@ -6,7 +6,7 @@
 module.exports = {
     dynamoDb: {
         demo: {
-            tableName: (process.env.DYNAMODB_DEMO_TABLE || '')
+            tableName: (process.env.DYNAMODB_DEMO_TABLE || 'dev-demo')
         },
         scooter:{
             tableName: (process.env.DYNAMO_SCOOTER_TABLENAME || '')

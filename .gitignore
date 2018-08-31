@@ -6,3 +6,17 @@ jspm_packages
 .serverless
 package-lock.json
 .idea/workspace.xml
+
+.idea/flying-backend-functions.iml
+
+.idea/jsLibraryMappings.xml
+
+.idea/libraries/flying_backend_functions_node_modules.xml
+
+.idea/misc.xml
+
+.idea/modules.xml
+
+.idea/vcs.xml
+
+.idea/watcherTasks.xml
